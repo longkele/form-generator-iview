@@ -122,7 +122,7 @@ export default {
                         formItem.validateState = 'success';
                         this.validateMessage = '';
                     }
-                })
+                });
             } else {
                 formItem.validateState = 'success';
                 this.validateMessage = '';
