@@ -7,6 +7,7 @@
             :fields="fields"
             @on-field-change="handelFieldChange"
             @on-button-event="handelButtonClick"
+            @keydown.native.enter.prevent="handelInputPress"
         />
         <slot></slot>
         <Page class="fg-filter-form-page"
@@ -20,6 +21,9 @@
 </template>
 
 <script>
+import axios from 'axios';
+import {isArray} from '@/libs';
+
 export default {
     props: {
         model: {
@@ -44,6 +48,7 @@ export default {
     },
     data() {
         return {
+            isAjax: false
         }
     },
     created() {
@@ -60,11 +65,11 @@ export default {
         handelButtonClick() {
             this.fetchData();
         },
-        // handelInputPress(e) {
-        //     if (e.keyCode === 13) {
-        //         this.fetchData();
-        //     }
-        // },
+        handelInputPress(e) {
+            if (e.keyCode === 13) {
+                this.fetchData();
+            }
+        },
         // 请求数据
         fetchData(pn) {
             let filterObj = {
@@ -75,11 +80,30 @@ export default {
             // 删除空字符串、选择全部的选项
             for (let key in this.model) {
                 let cur = this.model[key];
-                if (cur !== 'ALL' && cur !== '') {
-                    filterObj[key] = cur;
+                if (
+                    cur !== 'ALL'
+                    && cur !== ''
+                    && !(isArray(cur) && cur.length === 0)
+                ) {
+                    filterObj[key] = typeof cur === 'object' ? JSON.stringify(cur) : cur;
                 }
             }
             this.$emit('on-search-field-change', filterObj);
+            // 如果设置了apiBase，则请求数据
+            if (this.options.apiBase) {
+                if (this.isAjax) {
+                    return;
+                }
+                this.isAjax = true;
+                // 模拟异步请求数据
+                axios.get(this.options.apiBase).then(res => {
+                    this.$emit('on-search-data-change', res);
+                    this.isAjax = false;
+                }).catch(err => {
+                    this.$emit('on-search-data-error', err);
+                    this.isAjax = false;
+                })
+            }
         }
     },
 }

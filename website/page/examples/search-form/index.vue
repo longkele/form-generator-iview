@@ -8,10 +8,10 @@
             :fields="config.fields"
             :totalNum="totalNum"
             ref="searchForm"
-            @on-search-field-change="handelSearchDataChange">
+            @on-search-field-change="handelSearchFieldChange">
             <slot>
                 <Table v-if="list.length > 0" class="tablewp"
-                    :columns="columns" :data="list"
+                    :columns="config.columns" :data="list"
                 ></Table>
                 <div class="nocontent" v-else>
                     <p class="title" v-if="!isAjax && firstLoad">
@@ -37,16 +37,14 @@ export default {
         return {
             totalNum: 0,
             config,
-            columns: config.columns,
             list: [],
             firstLoad: false,
-            isAjax: false,
-            detailType: '',  // info review
-            showDetail: false
+            isAjax: false
         }
     },
     methods: {
-        handelSearchDataChange(field) {
+        handelSearchFieldChange(field) {
+            console.log('handelSearchFieldChange', field)
             if (this.isAjax) {
                 return;
             }
