@@ -17,11 +17,21 @@
         :label="field.label"
         :prop="field.model"
         :required="field.required"
-        :rules="getRules(field)"
+        :rules="getRules"
         :label-width="field.labelWidth"
         :class="itemClasses"
         :style="itemStyle"
     >
+        <Icon
+            v-if="labelTip.icon"
+            :type="labelTip.icon.name"
+            :size="labelTip.icon.size"
+            :color="labelTip.icon.color"
+            @click="handleIconClick"
+            @mouseenter.native="handleIconMouseEnter"
+            @mouseleave.native="handleIconMouseLeave"
+        />
+        <div v-if="contentShow" v-html="labelTip.content.body" />
         <component
             :is="getFieldCom(field.type)"
             :class="classes"
@@ -143,61 +153,20 @@ export default {
             }
             // console.log(field.model, valid, model);
             return show;
-        }
-    },
-    created() {
-        let field = this.field;
-        // 老版本兼容
-        if (field.subType) {
-            field.subtype = field.subType;
-        }
-        return field;
-    },
-    methods: {
-        handleFieldChange(model, value) {
-            setValue.call(this, {
-                originModel: this.form.model,
-                model: model,
-                value
-            });
-            this.$emit('on-field-change', {
-                model,
-                value,
-                field: this.field
-            });
         },
-        handleFieldPreview(model, value) {
-            this.$emit('on-field-preview', {
-                model,
-                value,
-                field: this.field
-            });
+        labelTip() {
+            let labelTip = this.field.labelTip || {};
+            return labelTip;
         },
-        handleSubmitClick(component) {
-            this.submit(component).then(() => {
-
-            }).catch(() => {
-
-            });
+        contentShow() {
+            let content = this.field.labelTip && this.field.labelTip.content || {};
+            return content.ifShow;
         },
-        handleResetClick() {
-            this.$emit('on-reset');
-        },
-        handleButtonClick($event) {
-            this.$emit('on-button-event', $event);
-        },
-        getFieldCom(comType = '') {
-            return `field${comType}`;
-        },
-        handelCheckboxCardClick(value) {
-            this.$emit('on-checkboxCard-click', value);
-        },
-        handelListItemClick(value) {
-            this.$emit('on-list-item-click', value);
-        },
-        getRules(field) {
+        getRules() {
+            const field = this.field;
             const type = field.type.toLowerCase();
             const subtype = field.subtype;
+
             let rules = [];
             if (field.required) {
                 if (type === 'datepicker' && ['daterange', 'datetimerange'].includes(subtype)) {
@@ -247,10 +216,90 @@ export default {
                 });
             }
             if (field.rules) {
-                rules = rules.concat(field.rules);
+                const model = this.form.model;
+                const validateValue = Object.assign({}, model || {}, this.paramsContainer || {});
+                if (Object.prototype.toString.call(field.rules) === '[object Array]') {
+                    rules = rules.concat(field.rules);
+                } else {
+                    Object.keys(field.rules).map(model => {
+                        field.rules[model].map(field => {
+                            if (validateValue[model] === field.value) {
+                                rules = rules.concat(field.rules);
+
+                            }
+                        });
+                    });
+                }
             }
             return rules;
+        }
+    },
+    created() {
+        let field = this.field;
+        // 老版本兼容
+        if (field.subType) {
+            field.subtype = field.subType;
+        }
+        return field;
+    },
+    methods: {
+        handleFieldChange(model, value) {
+            setValue.call(this, {
+                originModel: this.form.model,
+                model: model,
+                value
+            });
+            this.$emit('on-field-change', {
+                model,
+                value,
+                field: this.field
+            });
         },
+        handleFieldPreview(model, value) {
+            this.$emit('on-field-preview', {
+                model,
+                value,
+                field: this.field
+            });
+        },
+        handleSubmitClick(component) {
+            this.submit(component).then(() => {
+
+            }).catch(() => {
+
+            });
+        },
+        handleResetClick() {
+            this.$emit('on-reset');
+        },
+        handleButtonClick($event) {
+            this.$emit('on-button-event', $event);
+        },
+        handleIconClick() {
+            this.$emit('on-label-tip-click',{
+                field: this.field
+            });
+        },
+        handleIconMouseEnter() {
+            this.$emit('on-label-tip-mouseIn', {
+                field: this.field
+            });
+        },
+        handleIconMouseLeave() {
+            this.$emit('on-label-tip-mouseOut', {
+                field: this.field
+            });
+        },
+        getFieldCom(comType = '') {
+            return `field${comType}`;
+        },
+        handelCheckboxCardClick(value) {
+            this.$emit('on-checkboxCard-click', value);
+        },
+        handelListItemClick(value) {
+            this.$emit('on-list-item-click', value);
+        },
+        
 
         submit(component) {
             let field = component.field;

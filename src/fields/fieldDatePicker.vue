@@ -169,15 +169,54 @@ export default {
             ]
         };
         const disabledDates = this.field.disabledDates || [];
+        let shortcuts = subtypeToShortcuts[this.field.subtype || 'date'];
+        if (this.field.options) {
+            if (['daterange', 'datetimerange'].includes(this.field.subtype)) {
+                shortcuts = this.field.options.map(option => {
+                    return {
+                        text: option.label,
+                        value() {
+                            return [getDate(+option.value[0]), getDate(+option.value[1])];
+                        }
+                    };
+                });
+            } else if (['date', 'datetime'].includes(this.field.subtype || 'date')) {
+                shortcuts = this.field.options.map(option => {
+                    return {
+                        text: option.label,
+                        value() {
+                            return getDate(+option.value);
+                        }
+                    };
+                });
+            }
+
+        }
         return {
             options: {
-                shortcuts: subtypeToShortcuts[this.field.subtype || 'date'],
-                disabledDate(date) {
-                    // disabledDates 的格式为 [[, 2018-12-30], [2019-1-30, 2019-2-30], [2019-3-30,]]
-                    if (disabledDates.length === 0) {
-                        return false;
+                shortcuts: shortcuts,
+                disabledDate: date => {
+                    let initdate = '';
+                    if (this.field.subtype === 'date' && this.field.multiple) {
+                        if (!this.value) {
+                            return false;
+                        }
+                        const selectedDates = this.value.split(',') || [];
+                        if (selectedDates.length !== this.field.maxLength) {
+                            return false;
+                        }
+
+                        return !selectedDates.some(item => {
+                            if (this.field.format === 'yyyyMMdd') {
+                                initdate = new Date(item.split(/(\d{4})(\d{2})(\d{2})/));
+                            } else {
+                                initdate = new Date(item.split(/\D+/));
+                            }
+                            return date && date.valueOf() === initdate.valueOf() ;
+                        });
                     }
-                    // 只要满足 disabledDates 中任意一个区间，则禁用。
+                    // disabledselectedDates 的格式为 [[, 2018-12-30], [2019-1-30, 2019-2-30], [2019-3-30,]]
+                    // 只要满足 disabledselectedDates 中任意一个区间，则禁用。
                     return disabledDates.some(daterange => {
                         const startTime = daterange[0] ? (new Date(daterange[0])).getTime() : -Infinity;
                         const endTime = daterange[1] ? new Date(daterange[1]).getTime() : Infinity;
@@ -205,8 +244,7 @@ export default {
             const inlineClasses = this.inline ? 'inline' : 'full-width';
             if (this.inline) {
                 return `${this.classes}-${inlineClasses}-${this.field.subtype.toLowerCase()}`;
-            }
-            else {
+            } else {
                 return `${this.classes}-${inlineClasses}`;
             }
         },

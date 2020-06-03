@@ -227,9 +227,9 @@
 
 import iArticle from '../../../components/article';
 import inAnchor from '../../../components/anchor';
-import Code from '../../../code/powerful-fieldGenerator';
-import Demo from '../../../components/Demo';
+import Demo from '../../../components/demo';
 import iCode from '../../../components/code';
+import Code from '../../../code/development/powerful-fieldGenerator';
 const templates = [
     {
         path: '/form-editable-table',
@@ -284,7 +284,9 @@ export default {
         },
 
         handleDynamicFormAdd() {
-            this.dynamicFormData.push({});
+            const data = this.getDynamicFormData();
+            data.push({});
+            this.dynamicFormData = data;
         },
 
         handleDynamicFormDel(index) {
@@ -292,13 +294,18 @@ export default {
         },
 
         handleDynamicFormSubmit() {
+
+            this.$Message.info(JSON.stringify({
+                data: this.getDynamicFormData()
+            }));
+        },
+
+        getDynamicFormData() {
             const data = [];
             this.$refs.dynamicForm.forEach(form => {
                 data[form.model._index] = form.model;
             });
-            this.$Message.info(JSON.stringify({
-                data
-            }));
+            return data;
         }
     }
 };

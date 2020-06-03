@@ -113,6 +113,19 @@
                             <td>Array</td>
                             <td>[]</td>
                         </tr>
+                        <tr>
+                            <td>maxLength</td>
+                            <td>设置日期最多可以选择几天</td>
+                            <td>Number</td>
+                            <td>-</td>
+                        </tr>
+                        <tr>
+                            <td>options</td>
+                            <td>设置左侧的快捷方式。当subtype为date或datetime时，二维数组形如[{label:'昨天',value: -1},{label:'七天后',value: 7}]；当subtype为daterange或datetimerange时，二维数组形如[{label:'前后三天',value: [-3, 3]}],如果不需要快捷方式，传递空数组即可。
+                            </td>
+                            <td>Array</td>
+                            <td>-</td>
+                        </tr>
 
 
                     </tbody>
@@ -216,6 +229,51 @@
                 </div>
                 <i-code slot="code" lang="html">{{ code.yearAndMonth.code }}</i-code>
             </Demo>
+            <Demo title="快捷方式">
+                <div slot="demo">
+                    <Form :model="code.quick.data.model">
+                        <FieldGenerator
+                            :field="code.quick.data.field"
+                            @on-field-change="handleFieldChange"
+                        />
+                        <FieldGenerator
+                            :field="code.quick.data.daterangeField"
+                            @on-field-change="handleFieldChange"
+                        />
+                    </Form>
+                </div>
+                <div slot="desc">
+                    <p>设置快捷方式</p>
+                </div>
+                <i-code slot="code" lang="html">{{ code.quick.code }}</i-code>
+            </Demo>
+            <Demo title="选择多天及天数限制">
+                <div slot="demo">
+                    <Form :model="code.maxLength.data.model">
+                        <FieldGenerator
+                            :field="code.maxLength.data.field"
+                            @on-field-change="handleFieldChange"
+                        />
+                    </Form>
+                </div>
+                <div slot="desc">
+                    <p>在开启 multiple 后,可以选择多个日期, 用maxLength 来限制用户选择几天 </p>
+                </div>
+                <i-code slot="code" lang="html">{{ code.maxLength.code }}</i-code>
+            </Demo>
+            <Demo title="日期时间区间选择">
+                <div slot="demo">
+                    <Form :model="code.timedateRange.data.model">
+                        <FieldGenerator
+                            :field="code.timedateRange.data.field"
+                        />
+                    </Form>
+                </div>
+                <div slot="desc">
+                    <p>设置属性subtype为datetimerange,可选择具体的日期时间，也可结合format定制范围</p>
+                </div>
+                <i-code slot="code" lang="html">{{ code.timedateRange.code }}</i-code>
+            </Demo>
         </article>
     </i-article>
 </template>
@@ -224,7 +282,7 @@
 import iArticle from '../../../components/article';
 import inAnchor from '../../../components/anchor';
 import iCode from '../../../components/code';
-import Demo from '../../../components/Demo';
+import Demo from '../../../components/demo';
 import Code from '../../../code/doc/datePicker';
 
 export default {

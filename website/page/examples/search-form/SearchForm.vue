@@ -9,14 +9,16 @@
             @on-button-event="handelButtonClick"
             @keydown.native.enter.prevent="handelInputPress"
         />
-        <slot></slot>
-        <Page class="fg-filter-form-page"
+        <slot />
+        <Page
             v-if="options.showPage"
+            class="fg-filter-form-page"
             :current="model.page"
             :page-size="options.pageSize"
             :total="totalNum"
             :show-total="options.showPageTotal"
-            @on-change="fetchData" />
+            @on-change="fetchData"
+        />
     </div>
 </template>
 
@@ -44,7 +46,10 @@ export default {
                 return {};
             }
         },
-        totalNum: 0
+        totalNum: {
+            type: Number,
+            default: 0
+        }
     },
     data() {
         return {
@@ -106,7 +111,7 @@ export default {
             }
         }
     },
-}
+};
 </script>
 
 <style lang="less">

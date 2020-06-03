@@ -141,6 +141,7 @@ export default {
                 this.$Message.warning(`${this.value}已存在`);
                 return;
             }
+
             if (!this.validateMessage) {
                 this.addMember(e);
             }
@@ -158,7 +159,6 @@ export default {
         handelMemberDelete(i, e) {
             this.list.splice(i, 1);
             this.field.delMessage && this.$Message.success(this.field.delMessage);
-            // this.$set(this.form.model, this.field.model, this.list);
             this.$emit('on-change', this.field.model, this.list, e, this.field);
         },
         handleChange(e) {

@@ -42,6 +42,9 @@ export default {
             isAjax: false
         }
     },
+    mounted() {
+        this.$refs.searchForm.fetchData();
+    },
     methods: {
         handelSearchFieldChange(field) {
             console.log('handelSearchFieldChange', field)
@@ -55,30 +58,27 @@ export default {
             setTimeout(() => {
                 let list = config.data.filter(v => {
                     return (!field.name || v.name.indexOf(field.name) !== -1)
-                        && (!field.gender || field.gender === v.gender)
+                        && (!field.gender || field.gender === v.gender);
                 });
 
                 let res = {
                     totalNum: list.length,
                     list: list
-                }
+                };
 
                 this.totalNum = res.totalNum;
                 this.list = res.list;
 
                 this.firstLoad = true;
                 this.isAjax = false;
-            }, 300)
+            }, 300);
         },
         handelRefresh() {
             // 可以用来刷新页面
             this.$refs.searchForm.fetchData();
         }
-    },
-    mounted() {
-        this.$refs.searchForm.fetchData();
     }
-}
+};
 </script>
 
 <style lang="less">
