@@ -22,16 +22,23 @@
         :class="itemClasses"
         :style="itemStyle"
     >
-        <Icon
-            v-if="labelTip.icon"
-            :type="labelTip.icon.name"
-            :size="labelTip.icon.size"
-            :color="labelTip.icon.color"
-            @click="handleIconClick"
-            @mouseenter.native="handleIconMouseEnter"
-            @mouseleave.native="handleIconMouseLeave"
-        />
-        <div v-if="contentShow" v-html="labelTip.content.body" />
+        <div
+            :class="[labelTipClasses, labelTip.class]"
+            @mouseenter="handleIconMouseEnter"
+            @mouseleave="handleIconMouseLeave"
+        >
+            <Icon
+                v-if="labelTip.icon"
+                :type="labelTip.icon.name"
+                :size="labelTip.icon.size"
+                :color="labelTip.icon.color"
+                @click="handleIconClick"
+            />
+            <div
+                :class="labelTipContentClasses"
+                v-if="contentShow"
+                v-html="labelTip.content.body" />
+        </div>
         <component
             :is="getFieldCom(field.type)"
             :class="classes"
@@ -110,6 +117,12 @@ export default {
         },
         itemClasses() {
             return `${classPrefix}-form-item`;
+        },
+        labelTipClasses() {
+            return `${classPrefix}-labelTip-wp`;
+        },
+        labelTipContentClasses() {
+            return `${classPrefix}-labelTip-content`;
         },
         notFormfield() {
             return notFormfields.includes(this.field.type);
@@ -299,7 +312,7 @@ export default {
         handelListItemClick(value) {
             this.$emit('on-list-item-click', value);
         },
-        
+
 
         submit(component) {
             let field = component.field;

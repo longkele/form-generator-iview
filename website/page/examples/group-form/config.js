@@ -19,7 +19,7 @@ export const fields = [
                 size: 24
             },
             content: {
-                body: '<div class=\'example\'><span></span>What do you want others to call you?</div>',
+                body: '<div class="example"><span></span>输入框：自定义提示</div>',
                 ifShow: false
             }
         }
@@ -31,7 +31,18 @@ export const fields = [
         readonly: true,
         disabled: true,
         placeholder: '请输入用户名',
-        defaultHide: false
+        defaultHide: false,
+        labelTip: {
+            class: 'inputForbidden',
+            icon: {
+                name: 'ios-help-circle-outline',
+                size: 24
+            },
+            content: {
+                body: '<div class="example"><span></span>用户名：自定义提示</div>',
+                ifShow: false
+            }
+        }
     },
     {
         type: 'Input',

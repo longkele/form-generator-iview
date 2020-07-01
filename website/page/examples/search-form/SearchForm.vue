@@ -24,7 +24,7 @@
 
 <script>
 import axios from 'axios';
-import {isArray} from '@/libs';
+import {isArray} from '../../../libs';
 
 export default {
     props: {
