@@ -35,9 +35,10 @@
                 @click="handleIconClick"
             />
             <div
-                :class="labelTipContentClasses"
                 v-if="contentShow"
-                v-html="labelTip.content.body" />
+                :class="labelTipContentClasses"
+                v-html="labelTip.content.body"
+            />
         </div>
         <component
             :is="getFieldCom(field.type)"
